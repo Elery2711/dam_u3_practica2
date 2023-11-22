@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1062739593139",
+    "project_id": "dam-u3-practica2-riders",
+    "storage_bucket": "dam-u3-practica2-riders.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062739593139:android:c5f70ca8fb9ce3ee91adc6",
+        "android_client_info": {
+          "package_name": "com.example.dam_u3_practica2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdXw15e3IfTpTs8hH3hDclmTSJkgj0aJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
