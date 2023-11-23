@@ -16,6 +16,7 @@ class _practica2State extends State<practica2> {
   String title = "Kamen Rider Collection";
   int _index = 0;
   String? seleccionado;
+  bool edicion = false;
 
   final nombre = TextEditingController();
   final frase = TextEditingController();
@@ -31,6 +32,12 @@ class _practica2State extends State<practica2> {
         leading: _index != 0
             ? IconButton(
                 onPressed: () {
+                  seleccionado = null;
+                  nombre.clear();
+                  frase.clear();
+                  imagen.clear();
+                  fechaTransmision.clear();
+                  numeroTemporada.clear();
                   setState(() {
                     title = "Kamen Rider Collection";
                     _index = 0;
@@ -71,11 +78,137 @@ class _practica2State extends State<practica2> {
           title = "Rider seleccionado";
         });
         return visualizarDatoSeleccionado(seleccionado!);
+      case 3:
+        setState(() {
+          title = "Actualizar Rider";
+        });
+        return editar(seleccionado!);
       default:
         return Center(
           child: Text("Algo malio sal"),
         );
     }
+  }
+
+  Widget editar(String id) {
+    return FutureBuilder(
+      future: DB.mostrarUno(id),
+      builder: (context, dato) {
+        if (dato.hasData) {
+          if (!edicion) {
+            nombre.text = dato.data!['nombre'];
+            frase.text = dato.data!['frase'];
+            imagen.text = dato.data!['imagen'];
+            fechaTransmision.text = DateFormat('yyyy-MM-dd')
+                .format((dato.data!['fechaTransmision']).toDate());
+            numeroTemporada.text = dato.data!['numeroTemporada'].toString();
+            edicion = true;
+          }
+          return ListView(
+            padding: EdgeInsets.all(20),
+            children: [
+              TextField(
+                controller: nombre,
+                decoration: InputDecoration(
+                    labelText: "Nombre",
+                    hintText: "Nombre del Rider",
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10))),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: frase,
+                decoration: InputDecoration(
+                    labelText: "Frase",
+                    hintText: "Frase del Rider",
+                    prefixIcon: Icon(Icons.message),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10))),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: imagen,
+                decoration: InputDecoration(
+                    labelText: "Imagen",
+                    hintText: "URL de la imagen",
+                    prefixIcon: Icon(Icons.image),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10))),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                  controller: fechaTransmision,
+                  decoration: const InputDecoration(
+                      labelText: "Fecha de Transmisión inicial:",
+                      hintText: "Fecha de transmisión inicial de la temporada",
+                      prefixIcon: Icon(Icons.calendar_today),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)))),
+                  readOnly: true,
+                  onTap: () async {
+                    DateTime? fecha = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (fecha != null) {
+                      setState(() {
+                        fechaTransmision.text =
+                            DateFormat('yyyy-MM-dd').format(fecha);
+                      });
+                    }
+                  }),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: numeroTemporada,
+                decoration: InputDecoration(
+                    labelText: "Número de temporada",
+                    hintText: "Número de temporada del Rider",
+                    prefixIcon: Icon(Icons.format_list_numbered),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10))),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  DateTime fecha = DateTime.parse(fechaTransmision.text);
+
+                  Map<String, dynamic> rider = {
+                    'id': id,
+                    'nombre': nombre.text,
+                    'frase': frase.text,
+                    'imagen': imagen.text,
+                    'fechaTransmision': fecha,
+                    'numeroTemporada': int.parse(numeroTemporada.text),
+                  };
+                  DB.actualizar(rider);
+                  setState(() {
+                    title = "Kamen Rider Collection";
+                    _index = 0;
+                  });
+                },
+                child: Text("Actualizar"),
+              )
+            ],
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
   }
 
   Widget insertar() {
@@ -235,7 +368,8 @@ class _practica2State extends State<practica2> {
                 onPressed: () {
                   setState(() {
                     title = "Actualizar Rider";
-                    _index = 1;
+                    _index = 3;
+                    seleccionado = id;
                   });
                 },
                 child: Text("Actualizar"),
