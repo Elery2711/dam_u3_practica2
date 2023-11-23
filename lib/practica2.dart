@@ -119,30 +119,28 @@ class _practica2State extends State<practica2> {
           height: 10,
         ),
         TextField(
-          onTap: () async {
-            DateTime? fecha = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(1971),
-              lastDate: DateTime(2024),
-              locale: Locale('es', 'MX'),
-            );
-
-            if (fecha != null) {
-              fechaTransmision.text = DateFormat.yMMMd().format(fecha);
-            }
-          },
-          readOnly: true,
-          controller: fechaTransmision,
-          decoration: InputDecoration(
-            labelText: "Fecha de transmisión",
-            hintText: "Fecha de transmisión del Rider",
-            prefixIcon: Icon(Icons.calendar_today),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
+            controller: fechaTransmision,
+            decoration: const InputDecoration(
+                labelText: "Fecha de Transmisión inicial:",
+                hintText: "Fecha de transmisión inicial de la temporada",
+                prefixIcon: Icon(Icons.calendar_today),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)))),
+            readOnly: true,
+            onTap: () async {
+              DateTime? fecha = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2101),
+              );
+              if (fecha != null) {
+                setState(() {
+                  fechaTransmision.text =
+                      DateFormat('yyyy-MM-dd').format(fecha);
+                });
+              }
+            }),
         SizedBox(
           height: 10,
         ),
@@ -160,11 +158,13 @@ class _practica2State extends State<practica2> {
         ),
         ElevatedButton(
           onPressed: () {
+            DateTime fecha = DateTime.parse(fechaTransmision.text);
+
             Map<String, dynamic> rider = {
               'nombre': nombre.text,
               'frase': frase.text,
               'imagen': imagen.text,
-              'fechaTransmision': int.parse(fechaTransmision.text),
+              'fechaTransmision': fecha,
               'numeroTemporada': int.parse(numeroTemporada.text),
             };
             DB.insertar(rider);
